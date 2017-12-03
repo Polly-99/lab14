@@ -18,15 +18,18 @@ int cmake (int sec = 0, std::string str = "Default")
   	}
 	else
     		c.wait();
-	if (c.exit_code() == 0) 
 
-	bp::child c2("cmake --build _builds", bp::std_out > out);
-	if (sec) {
-    		if (!c.wait_for(std::chrono::seconds(sec)));
-     			c.terminate();
-  	}
-	else
-    		c.wait();
+	if (c.exit_code() == 0) {
+
+		bp::child c2("cmake --build _builds", bp::std_out > out);
+		if (sec) {
+    			if (!c2.wait_for(std::chrono::seconds(sec)));
+     				c2.terminate();
+  		}
+		else
+    			c2.wait();
+		return c2.exit_code();
+	}
 
  	return c.exit_code();
 }
