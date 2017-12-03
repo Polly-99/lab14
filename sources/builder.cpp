@@ -7,8 +7,19 @@
 namespace bp = boost::process;
 namespace po = boost::program_options;
 
-int wait (bp::child Child, int sec)
+int cmake (int sec = 0, std::string str = "Default")
 {
+	std::string command = "cmake -H. -B_builds -DCMAKE_INSTALL_PREFIX=_install -DCMAKE_BUILD_TYPE=" + str;
+	bp::child c(command, bp::std_out > out);
+	if (sec) {
+    		if (!c.wait_for(std::chrono::seconds(sec)));
+     			c.terminate();
+  	}
+	else
+    		c.wait();
+	if (c.exit_code == 0) 
+
+	bp::child c2("cmake --build _builds", bp::std_out > out);
 	if (sec) {
     		if (!c.wait_for(std::chrono::seconds(sec)));
      			c.terminate();
@@ -19,21 +30,19 @@ int wait (bp::child Child, int sec)
  	return c.exit_code();
 }
 
-int cmake (int sec = 0, std::string str = "Default")
-{
-	std::string command = "cmake -H. -B_builds -DCMAKE_INSTALL_PREFIX=_install -DCMAKE_BUILD_TYPE=" + str;
-	bp::child c(command, bp::std_out > out);
-	if (wait(c, sec) == 0)
-		bp::child c2("cmake --build _builds", bp::std_out > out);
-	return (wait(c2, sec));
-}
-
 int build (std::string str, int sec = 0)
 {
 	std::string command = "cmake --build _builds --target " + str;
 
 	bp::child c(command, bp::std_out > out);
-	return (wait(c, sec));
+	if (sec) {
+    		if (!c.wait_for(std::chrono::seconds(sec)));
+     			c.terminate();
+  	}
+	else
+    		c.wait();
+
+ 	return c.exit_code();
 }
 
 int main(int ac, char *av[])
@@ -72,13 +81,6 @@ int main(int ac, char *av[])
 		if (!cmake() == 0)
 			result = build("package");
 	}
-
-	/*else if (vm.cout(&&&&&&))
-	{
-		if (cmake() == 0)
-			if (build("install") == 0)
-				result = build("package");
-	}*/	
 
 	else if (vm.count("timeout"))
 	{
