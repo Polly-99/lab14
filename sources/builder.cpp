@@ -9,6 +9,7 @@ namespace po = boost::program_options;
 
 int cmake (int sec = 0, std::string str = "Default")
 {
+	bp::ipstream out;
 	std::string command = "cmake -H. -B_builds -DCMAKE_INSTALL_PREFIX=_install -DCMAKE_BUILD_TYPE=" + str;
 	bp::child c(command, bp::std_out > out);
 	if (sec) {
@@ -17,7 +18,7 @@ int cmake (int sec = 0, std::string str = "Default")
   	}
 	else
     		c.wait();
-	if (c.exit_code == 0) 
+	if (c.exit_code() == 0) 
 
 	bp::child c2("cmake --build _builds", bp::std_out > out);
 	if (sec) {
@@ -32,6 +33,7 @@ int cmake (int sec = 0, std::string str = "Default")
 
 int build (std::string str, int sec = 0)
 {
+	bp::ipstream out;
 	std::string command = "cmake --build _builds --target " + str;
 
 	bp::child c(command, bp::std_out > out);
