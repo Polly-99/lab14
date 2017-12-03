@@ -73,13 +73,6 @@ int main(int ac, char *av[])
 			result = build("package");
 	}
 
-	/*else if (vm.cout(&&&&&&))
-	{
-		if (cmake() == 0)
-			if (build("install") == 0)
-				result = build("package");
-	}*/	
-
 	else if (vm.count("timeout"))
 	{
 		result = cmake(vm["timeout"].as<int>());
